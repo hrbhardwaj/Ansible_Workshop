@@ -1,0 +1,109 @@
+Ansible Playbook:
+
+Ansible playbook : is a structured and human-readable configuration file written in YAML format that defines a series of 
+   tasks and configurations to be executed on managed hosts. Playbooks allow you to automate complex IT tasks, manage configurations, 
+   and deploy applications with ease. They provide a way to express your desired state for systems and applications and orchestrate their
+   setup and management.
+
+ Play is a set of tasks that operate on a specific group of hosts, and  Playbook is a collection of one or more 
+    plays that define the configuration and automation tasks for your infrastructure and applications.
+
+
+#  Pre-requsities:
+
+Prerequisite:
+ 1. 3 AWS Servers
+ 2. Keyless Access configured between master and slaves
+ 3. Configuration of slaves in Ansible Master’s /etc/ansible/hosts 4. Slaves are called slave1 and slave2 respectively
+
+#  Creating Ansible Playbook:
+
+Step 1: Edit an Ansible Playbook in a new folder called ‘ansible’, by using the
+         following commands:
+  $ mkdir ansible 
+  $ cd ansible
+  $ sudo nano ansible play.yaml
+
+Step 2: Edit the play.yaml with the following syntax:
+    ---
+    - hosts: slave1
+      become: yes
+         name: Installation apache2 on slave1 
+         task: 
+          - name: Install apache2 
+            apt: name=apache2 state=latest
+
+    - hosts: slave2
+      become: yes
+         name: Installation nginx on slave1 
+         task: 
+          - name: Installing nginx 
+            apt: name=nginx state=latest
+
+  #Step 3: Run the Ansible Playbook using the following command:
+
+  $ ansible-playbook play.yaml
+
+
+
+
+
+     You have successfully installed NGINX and Apache2 on slave machines, based on their name.
+
+
+# Executing scripts using Ansible Playbook:
+
+  Step 1: Create a sample script in the Ansible folder. Here we are creating a script to enter some text in a file
+
+$ sudo nano scirpt.sh
+
+   Write the following syntax in the script:
+
+    #!/bin/sh
+    echo "hello world" > /var/www/html/1.html
+
+# Step 2: Let’s create the Playbook now which is going to execute this script. Let’s add a task to our previously written Playbook for slave2.
+
+
+---
+    - hosts: slave1
+      become: yes
+         name: Installation apache2 on slave1 
+         task: 
+          - name: Install apache2 
+            apt: name=apache2 state=latest
+            script: script.sh
+    - hosts: slave2
+      become: yes
+         name: Installation nginx on slave1 
+         task: 
+          - name: Installing nginx 
+            apt: name=nginx state=latest
+            script: script.sh
+
+  # Step 3: Let’s run the script now using the following syntax:
+
+$ ansible playbook play.yaml
+
+
+
+
+  Let’s verify the output by going to our browser, and navigating to /1.html
+
+
+
+
+   With this, we have successfully completed our Ansible Playbook hands-on.
+
+
+
+
+
+
+
+
+
+
+
+
+
