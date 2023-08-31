@@ -1,0 +1,29 @@
+## This playbook performs backup and cleanup tasks on servers.
+
+---
+- name: Backup and Cleanup
+  hosts: backup_servers
+  become: true
+
+  tasks:
+    - name: Create backup directory
+      file:
+        path: /backup
+        state: directory
+
+    - name: Backup important files
+      command: tar -czvf /backup/backup_{{ ansible_date_time.date }}.tar.gz /path/to/important/files
+
+    - name: Remove old backups
+      find:
+        paths: /backup
+        patterns: "backup_*"
+        age: "7d"
+        recurse: yes
+      register: old_backups
+
+    - name: Delete old backups
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ old_backups.files }}"
