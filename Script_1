@@ -1,0 +1,41 @@
+## This playbook provisions and configures web servers with a basic web application.
+
+---
+- name: Provision and Configure Web Servers
+  hosts: web_servers
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install Apache and PHP
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apache2
+        - php
+      when: ansible_os_family == "Debian"
+
+    - name: Start and enable Apache service
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Copy web app files
+      copy:
+        src: /path/to/webapp/files
+        dest: /var/www/html/
+      notify: Restart Apache
+      when: ansible_os_family == "Debian"
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
