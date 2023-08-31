@@ -1,0 +1,25 @@
+## This playbook creates users and deploys SSH keys for secure access.
+
+---
+- name: Manage Users and SSH Keys
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create user accounts
+      user:
+        name: "{{ item.name }}"
+        state: present
+        create_home: yes
+      loop:
+        - { name: user1 }
+        - { name: user2 }
+
+    - name: Deploy SSH keys
+      authorized_key:
+        user: "{{ item.user }}"
+        key: "{{ lookup('file', item.key_path) }}"
+      loop:
+        - { user: user1, key_path: '/path/to/user1_pub_key.pub' }
+        - { user: user2, key_path: '/path/to/user2_pub_key.pub' }
+
