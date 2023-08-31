@@ -1,0 +1,31 @@
+This playbook deploys a Dockerized application on target hosts.
+
+---
+- name: Deploy Dockerized App
+  hosts: app_servers
+  become: true
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Pull Docker image
+      docker_image:
+        name: myapp_image:latest
+
+    - name: Run Docker container
+      docker_container:
+        name: myapp_container
+        image: myapp_image:latest
+        ports:
+          - "80:80"
